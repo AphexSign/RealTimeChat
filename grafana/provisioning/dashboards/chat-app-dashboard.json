@@ -1,0 +1,49 @@
+{
+  "title": "Chat Application Dashboard",
+  "uid": "chat-app-dashboard",
+  "version": 1,
+  "time": { "from": "now-30m", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s","10s","30s","1m"] },
+  "panels": [
+    {
+      "title": "Active WebSocket Connections",
+      "type": "gauge",
+      "targets": [{ "expr": "spring_websocket_session_active", "legendFormat": "Active Sessions" }]
+    },
+    {
+      "title": "Messages Sent per Second",
+      "type": "timeseries",
+      "targets": [{ "expr": "rate(spring_websocket_message_sent_count[30s])", "legendFormat": "Messages/sec" }]
+    },
+    {
+      "title": "Persistence saveAsync - Latency",
+      "type": "timeseries",
+      "targets": [{ "expr": "rate(persistence_saveAsync_seconds_sum[30s]) / rate(persistence_saveAsync_seconds_count[30s])", "legendFormat": "Avg Latency" }]
+    },
+    {
+      "title": "Persistence saveAsync - Count",
+      "type": "stat",
+      "targets": [{ "expr": "persistence_saveAsync_seconds_count" }]
+    },
+    {
+      "title": "DLQ Push Count",
+      "type": "stat",
+      "targets": [{ "expr": "dlq_pushFailedMessage_seconds_count" }]
+    },
+    {
+      "title": "Circuit Breaker State",
+      "type": "stat",
+      "targets": [{ "expr": "resilience4j_circuitbreaker_state{name=\"messagePersistence\"}" }]
+    },
+    {
+      "title": "Circuit Breaker Failure Rate",
+      "type": "gauge",
+      "targets": [{ "expr": "resilience4j_circuitbreaker_failure_rate{name=\"messagePersistence\"}" }]
+    },
+    {
+      "title": "Online Users (Gauge)",
+      "type": "gauge",
+      "targets": [{ "expr": "websocket_online_users" }]
+    }
+  ]
+}

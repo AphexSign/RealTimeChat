@@ -1,0 +1,92 @@
+# Server Configuration
+server:
+  port: 8080
+
+# H2 Database
+spring:
+  cache:
+    type: redis
+  data:
+    redis:
+      port: 6379
+      password: 123
+      lettuce:
+        pool:
+          max-active: 50
+          max-idle: 25
+          max-wait: 3000ms
+          min-idle: 10
+
+  application:
+    name: chat-application
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 25
+  datasource:
+    url: jdbc:h2:mem:chatdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # H2 Console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.example.chat: DEBUG
+    org.springframework.messaging: DEBUG
+    org.springframework.web.socket: DEBUG
+    com.giffing.bucket4j: DEBUG
+    org.springframework.cache: DEBUG
+    org.springframework.data.redis: DEBUG
+
+rate-limiter:
+  messages:
+    capacity: 10
+    refill-tokens: 10
+    refill-duration-seconds: 60
+
+jwt:
+  secret: FITSy9dGK9BlOOrOqOi3xRaWjMPgR9KQtT0GaPiBaKQ7LcYniHsdsSA78iEy8BmOGAXpkVi7Imp9dZeHfJPptA==
+  expiration: 900000
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      messagePersistence:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3
+  bulkhead:
+    instances:
+      messagePersistence:
+        maxConcurrentCalls: 20
+        maxWaitDuration: 1s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,beans,env
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
